@@ -62,10 +62,31 @@ void persontry()
 	thePatients["hadeer"] = p2;
 }
 
+void print()
+{
+	int ctr = 0;
+	cout << "here\n";
+	for (auto i : thePatients)
+	{
+		cout << "\nPatient" << ++ctr;
+		cout << "\nUsername: " << i.second.account.username;
+		cout << "\nPassword: " << i.second.account.password;
+		cout << "\nAge: " << i.second.age;
+		cout << "\nGender: " << i.second.gender;
+		cout << "\nDisease History:\n";
+		for (auto j : i.second.diseases_history)
+		{
+			cout << j.first << " " << j.second << endl;
+		}
+		cout << "-------------------------------------\n";
+	}
+}
+
 int main()
 {
 	//persontry();
 	Start();
+	print();
 	cout << "\n===================================*" << MAGENTA << " Welcome " << RESET << "*===================================\n";
 	string ans;
 	Person per;
@@ -140,7 +161,7 @@ void Start()
 	int sz;
 	string line, temp;
 	readfile >> line; //<<<<<<<<<<<<<<<<<<ID>>>>>>>>>>>>>>>>>>
-	readfile >> line; //ID
+	readfile >> ID; //ID
 	readfile >> line; //<<<<<<<<<<<<<<<SYMPTOMS>>>>>>>>>>>>>>>
 	readfile >> line; //symp1;symp2;symp3;
 	theSymptoms = split(line, ';');
@@ -150,19 +171,22 @@ void Start()
 	for (int i = 0; i < sz; i++)
 	{
 		readfile >> line; //--------------------------------------
-		readfile >> dis.id >> dis.title >> dis.general_info;
+		readfile >> dis.id >> dis.title;
+		getline(readfile >> ws,dis.general_info);
 		readfile >> line; // the disease symptoms
 		dis.symptoms = split(line, ';');
 		readfile >> line; // the disease patients
 		dis.patients = split(line, ';');
 		theDiseases[dis.id] = dis;
 	}
+	readfile >> line; //<<<<<<<<<<<<<<<DOCTORS>>>>>>>>>>>>>>>
 	readfile >> sz; //the number of doctors
 	Doctor doctor;
 	for (int i = 0; i < sz; i++)
 	{
 		readfile >> line; //--------------------------------------
-		readfile >> doctor.fullName >> doctor.account.username >> doctor.account.password;
+		getline(readfile >> ws, doctor.fullName);
+		readfile >> doctor.account.username >> doctor.account.password;
 		readfile >> line;
 		doctor.diseases_Added = split(line);
 		theDoctors[doctor.account.username] = doctor;
@@ -174,32 +198,34 @@ void Start()
 	for (int i = 0; i < sz; i++)
 	{
 		readfile >> line; //--------------------------------------
-		readfile >> patient.fullName >> patient.gender >> patient.age >> patient.account.username >> patient.account.password;
+		getline(readfile >> ws, patient.fullName);
+		readfile >> patient.gender >> patient.age >> patient.account.username >> patient.account.password;
 		readfile >> line; //title1,date1;title2,date2;title3,date3;
 		tempSet = split(line, ';');
 		for (string s : tempSet)  //s = title1,date1
 		{
 			string title = "", date = "";
+			temp = "";
 			for (int j = 0; j < s.size(); j++)
 			{
-				if (s[i] != ',')
+				if (s[j] != ',')
 				{
-					temp += s[i];
+					temp += s[j];
 				}
 				else
 				{
-					if (title == "")
-						title = temp;
-					else date = temp;
+					title = temp;
 					temp = "";
 				}
 			}
+			date = temp;
 			patient.diseases_history.push_back({ title, date });
 		}
 		thePatients.insert({ patient.account.username, patient });
+		patient.diseases_history.clear();
 	}
 	readfile >> line; //<<<<<<<<<<<<<<I Love Nemo>>>>>>>>>>>>>>
-
+	cout << "End\n";
 	readfile.close();
 }
 
@@ -263,7 +289,7 @@ void End()
 		{
 			writefile << dis_his.first << ',' << dis_his.second << ';';
 		}
-		writefile << "\n<<<<<<<<<<<<<<I Love Nemo>>>>>>>>>>>>>>\n";
 	}
+	writefile << "\n<<<<<<<<<<<<<<I Love Nemo>>>>>>>>>>>>>>\n";
 	writefile.close();
 }
