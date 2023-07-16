@@ -164,62 +164,69 @@ void Start()
 	readfile >> disease_ID; //ID
 	readfile >> line; //<<<<<<<<<<<<<<<SYMPTOMS>>>>>>>>>>>>>>>
 	readfile >> line; //symp1;symp2;symp3;
-	theSymptoms = split(line, ';');
+	if (line != "#")
+		theSymptoms = split(line, ';');
 	readfile >> line; //<<<<<<<<<<<<<<<DISEASES>>>>>>>>>>>>>>>
 	readfile >> sz;  // the number of diseases
-	Disease dis;
 	for (int i = 0; i < sz; i++)
 	{
+		Disease dis;
 		readfile >> line; //--------------------------------------
 		readfile >> dis.id >> dis.title;
-		getline(readfile >> ws,dis.general_info);
+		getline(readfile >> ws, dis.general_info);
 		readfile >> line; // the disease symptoms
-		dis.symptoms = split(line, ';');
+		if (line != "#")
+			dis.symptoms = split(line, ';');
 		readfile >> line; // the disease patients
-		dis.patients = split(line, ';');
+		if (line != "#")
+			dis.patients = split(line, ';');
 		theDiseases[dis.id] = dis;
 	}
 	readfile >> line; //<<<<<<<<<<<<<<<DOCTORS>>>>>>>>>>>>>>>
 	readfile >> sz; //the number of doctors
-	Doctor doctor;
 	for (int i = 0; i < sz; i++)
 	{
+		Doctor doctor;
 		readfile >> line; //--------------------------------------
 		getline(readfile >> ws, doctor.fullName);
 		readfile >> doctor.account.username >> doctor.account.password;
 		readfile >> line;
-		doctor.diseases_Added = split(line);
+		if (line != "#")
+			doctor.diseases_Added = split(line);
 		theDoctors[doctor.account.username] = doctor;
 	}
 	readfile >> line; //<<<<<<<<<<<<<<<PATEINTS>>>>>>>>>>>>>>>
 	readfile >> sz;  // the number of pateints
-	Patient patient;
-	set<string>tempSet;
 	for (int i = 0; i < sz; i++)
 	{
+		Patient patient;
+		set<string>tempSet;
 		readfile >> line; //--------------------------------------
 		getline(readfile >> ws, patient.fullName);
 		readfile >> patient.gender >> patient.age >> patient.account.username >> patient.account.password;
 		readfile >> line; //title1,date1;title2,date2;title3,date3;
-		tempSet = split(line, ';');
-		for (string s : tempSet)  //s = title1,date1
+		if (line != "#")
 		{
-			string title = "", date = "";
-			temp = "";
-			for (int j = 0; j < s.size(); j++)
+			tempSet = split(line, ';');
+			for (string s : tempSet)  //s = title1,date1
 			{
-				if (s[j] != ',')
+				string title = "", date = "";
+				temp = "";
+				for (int j = 0; j < s.size(); j++)
 				{
-					temp += s[j];
+					if (s[j] != ',')
+					{
+						temp += s[j];
+					}
+					else
+					{
+						title = temp;
+						temp = "";
+					}
 				}
-				else
-				{
-					title = temp;
-					temp = "";
-				}
+				date = temp;
+				patient.diseases_history.push_back({ title, date });
 			}
-			date = temp;
-			patient.diseases_history.push_back({ title, date });
 		}
 		thePatients.insert({ patient.account.username, patient });
 		patient.diseases_history.clear();
@@ -239,6 +246,8 @@ void End()
 	writefile << disease_ID << '\n';
 
 	writefile << "<<<<<<<<<<<<<<<SYMPTOMS>>>>>>>>>>>>>>>\n";
+	if (theSymptoms.size() == 0)
+		writefile << '#';
 	for (string symp : theSymptoms)
 	{
 		writefile << symp << ';';
@@ -250,12 +259,16 @@ void End()
 		writefile << dis.second.id << '\n';
 		writefile << dis.second.title << '\n';
 		writefile << dis.second.general_info << '\n';
-		//symp1;symp2;symp3;symp4;
+		//symp1;symp2;symp3;symp4
+		if (dis.second.symptoms.size() == 0)
+			writefile << '#';
 		for (string symp : dis.second.symptoms) {
 			writefile << symp << ';';
 		}
 		writefile << '\n';
 		//pat1;pat2;pat3;pat4
+		if (dis.second.patients.size() == 0)
+			writefile << '#';
 		for (string pat : dis.second.patients) {
 			writefile << pat << ';';
 		}
@@ -269,6 +282,8 @@ void End()
 		writefile << doc.second.account.username << "\n";
 		writefile << doc.second.account.password << "\n";
 		//id1;id2;id3;id4;id5;id6;id7;
+		if (doc.second.diseases_Added.size() == 0)
+			writefile << '#';
 		for (int disId : doc.second.diseases_Added)
 		{
 			writefile << disId << ';';
@@ -285,6 +300,8 @@ void End()
 		writefile << pat.second.account.username << "\n";
 		writefile << pat.second.account.password << "\n";
 		//title1,date1;title2,date2;title3,date3;
+		if (pat.second.diseases_history.size() == 0)
+			writefile << '#';
 		for (auto dis_his : pat.second.diseases_history)
 		{
 			writefile << dis_his.first << ',' << dis_his.second << ';';
