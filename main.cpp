@@ -8,85 +8,10 @@
 
 void Start();
 void End();
-void persontry()
-{
-	Doctor d1;
-	d1.account.username = "nemo";
-	d1.account.password = "nemo123";
-	d1.fullName = "namanemo";
-	d1.diseases_Added.insert(1);
-	d1.diseases_Added.insert(2);
-	theDoctors["nemo"] = d1;
-
-	Doctor d2;
-	d2.account.username = "uc";
-	d2.account.password = "uc123";
-	d2.fullName = "gus";
-	d1.diseases_Added.insert(4);
-	d1.diseases_Added.insert(3);
-	theDoctors["uc"] = d2;
-
-	Doctor d3;
-	d3.account.username = "dory";
-	d3.account.password = "dory123";
-	d3.fullName = "doha";
-	d1.diseases_Added.insert(5);
-	d1.diseases_Added.insert(6);
-	d1.diseases_Added.insert(7);
-	theDoctors["dory"] = d3;
-
-	//===========================================
-	Disease dis1;
-	dis1.id = 1;
-	dis1.title = "dis1";
-	dis1.general_info = "I am dis1";
-	dis1.symptoms.insert("symp1");
-	dis1.symptoms.insert("symp2");
-
-	//==========================================
-
-	Patient p1;
-	p1.account.username = "marim";
-	p1.account.password = "marim123";
-	p1.age = 30;
-	p1.gender = 'f';
-	p1.fullName = "marim nabil";
-	thePatients["marim"] = p1;
-
-	Patient p2;
-	p2.account.username = "hadeer";
-	p2.account.password = "hadeer123";
-	p2.age = 30;
-	p2.gender = 'f';
-	p2.fullName = "hadeer khald";
-	thePatients["hadeer"] = p2;
-}
-
-void print()
-{
-	int ctr = 0;
-	cout << "here\n";
-	for (auto i : thePatients)
-	{
-		cout << "\nPatient" << ++ctr;
-		cout << "\nUsername: " << i.second.account.username;
-		cout << "\nPassword: " << i.second.account.password;
-		cout << "\nAge: " << i.second.age;
-		cout << "\nGender: " << i.second.gender;
-		cout << "\nDisease History:\n";
-		for (auto j : i.second.diseases_history)
-		{
-			cout << j.first << " " << j.second << endl;
-		}
-		cout << "-------------------------------------\n";
-	}
-}
 
 int main()
 {
-	//persontry();
 	Start();
-	print();
 	cout << "\n===================================*" << MAGENTA << " Welcome " << RESET << "*===================================\n";
 	string ans;
 	Person per;
@@ -231,8 +156,7 @@ void Start()
 		thePatients.insert({ patient.account.username, patient });
 		patient.diseases_history.clear();
 	}
-	readfile >> line; //<<<<<<<<<<<<<<I Love Nemo>>>>>>>>>>>>>>
-	cout << "End\n";
+	readfile >> line; //<<<<<<<<<<<<<<END>>>>>>>>>>>>>>
 	readfile.close();
 }
 
@@ -307,6 +231,6 @@ void End()
 			writefile << dis_his.first << ',' << dis_his.second << ';';
 		}
 	}
-	writefile << "\n<<<<<<<<<<<<<<I Love Nemo>>>>>>>>>>>>>>\n";
+	writefile << "\n<<<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>";
 	writefile.close();
 }
