@@ -39,8 +39,11 @@ void Person::Register()
 			getline(cin, newDoc.account.password);
 			theDoctors[newDoc.account.username] = newDoc;
 			doc = &theDoctors[newDoc.account.username];
-			cout << GREEN << "You loged in successfully\n" << RESET;
+			cout << GREEN << "Your account has been created successfully\n" << RESET;
 			doc->doc_menu();
+		}
+		else {
+			cout << "This username is taken\n";
 		}
 	}
 	else if (choice == "2") {
@@ -56,10 +59,14 @@ void Person::Register()
 			cin >> newPat.age;
 			cout << "Enter your gender -> ";
 			cin >> newPat.gender;
+			cin.ignore();
 			thePatients[newPat.account.username] = newPat;
 			pat = &thePatients[newPat.account.username];
-			cout << GREEN << "You loged in successfully\n" << RESET;
+			cout << GREEN << "Your account has been created successfully\n" << RESET;
 			pat->pat_menu();
+		}
+		else {
+			cout << "This username is taken\n";
 		}
 	}
 	else {
@@ -126,12 +133,12 @@ void Person::log_out()
 	cout << GREEN << "You loged out successfully\n" << RESET;
 }
 
-
 void Person::delete_account()
 {
 	string ans;
 	cout << RED << "Are you sure you want to delete your account? (y)\n--> " << RESET;
 	cin >> ans;
+	cin.ignore();
 	if (ans != "y")return;
 	if (theUser == doctor) {
 		theDoctors.erase(doc->account.username);
@@ -141,7 +148,6 @@ void Person::delete_account()
 	}
 	cout << GREEN << "Your accont has been deleted\n" << RESET;
 }
-
 
 //============================== Doctor ===============================\\
 
@@ -162,6 +168,7 @@ void Doctor::add_disease()
 	cout << CYAN << "Enter General info for disease -> " << RESET;
 	getline(cin, dis.general_info);
 	doc->diseases_Added.insert(++disease_ID);
+	dis.id = disease_ID;
 	theDiseases[disease_ID] = dis;
 }
 
@@ -184,14 +191,67 @@ void Doctor::remove_disease()
 		doc->diseases_Added.erase(it);
 		cout << GREEN << "Disease is removed successfully\n"<<RESET;
 	}
+	else
+	cout << RED << "NO disease has been added\n" << RESET;
 }   
 
 void Doctor::add_symptom()
 {
+	if (doc->diseases_Added.size() > 0)
+	{
+		string ans,symp;
+		int cnt = 0;
+		for (auto it = doc->diseases_Added.begin(); it != doc->diseases_Added.end(); it++)
+		{
+			cout << ++cnt << '-' << ORANGE << theDiseases[*it].title << endl;
+		}
+		cout << CYAN << "Enter number of disease which you want to add symptom\n-> ";
+		getline(cin, ans);
+		auto it = doc->diseases_Added.begin();
+		advance(it, stoi(ans) - 1);
+		int id = *it;
+		cout << CYAN << "Enter symptom which you want to add";
+		getline(cin, symp);
+		theDiseases[id].symptoms.insert(symp);
+		theSymptoms.insert(symp);
+		cout << GREEN << "Your symptom has been added successfully\n" << RESET;
+	}
+	else
+		cout << RED << "NO disease has been added\n" << RESET;
 }
 
 void Doctor::remove_symptom()
 {
+	if (doc->diseases_Added.size() > 0)
+	{
+		string ans1,ans2;
+		int cnt1 = 0,cnt2=0;
+		for (auto it = doc->diseases_Added.begin(); it != doc->diseases_Added.end(); it++)
+		{
+			cout << ++cnt1 << '-' << ORANGE << theDiseases[*it].title << endl;
+		}
+		cout << CYAN << "Enter number of disease which you want to remove symptom\n-> ";
+		getline(cin, ans1);
+		auto it = doc->diseases_Added.begin();
+		advance(it, stoi(ans1) - 1);
+		int id = *it;
+		if (theDiseases[id].symptoms.size() == 0) {
+			cout <<RED<< "This disease doesn't has any symptoms yet\n"<<RESET;
+			return;
+		}
+		for (auto it = theDiseases[id].symptoms.begin(); it != theDiseases[id].symptoms.end(); it++)
+		{
+			cout << ++cnt2 << '-' << ORANGE << *it << endl;
+		}
+		cout << CYAN << "Enter number of symptom which you want to remove";
+		getline(cin, ans2);
+		auto itt = theDiseases[id].symptoms.begin();
+		advance(itt, stoi(ans2) - 1);
+		theDiseases[id].symptoms.erase(*itt);
+		cout << GREEN << "Your symptom has been removed successfully\n" << RESET;
+	}
+	else
+		cout << RED << "NO disease has been added\n" << RESET;
 }
 
 void Doctor::display_diseases()
@@ -217,6 +277,33 @@ void Doctor::display_diseases()
 
 void Doctor::view_disease_patients()
 {
+	if(doc->diseases_Added.size()==0){
+		cout << RED << "You didn't add any disease yet\n";
+		return;
+	}
+	cout << "Choose the disease number:\n";
+	int ctr = 0, ans;
+	for (auto dis : doc->diseases_Added) {
+		cout << ++ctr << "-" << theDiseases[dis].title << endl;
+	}
+	cout << "--> ";
+	cin >> ans;
+	cin.ignore();
+	if (ans == 0 || ans >= ctr) {
+		cout << RED << "\aInvalid choice.. please try again\n";
+		return;
+	}
+	auto it = doc->diseases_Added.begin();
+	advance(it, ctr);
+	if (theDiseases[*it].patients.size() == 0) {
+		cout << "This disease doesn't has any patients yet\n";
+		return;
+	}
+	cout << theDiseases[*it].title << " symptoms are: ";
+	for (const string& patient : theDiseases[*it].patients) {
+		cout << patient << " ";
+	}
+	cout << endl;
 }
 
 void Doctor::doc_menu()
@@ -286,10 +373,42 @@ void Patient::diagnosis()
 
 void Patient::display_disease_symptoms()
 {
+	if(theDiseases.size() == 0){
+		cout << RED << "There is no diseases\n";
+	}
+	cout << "Choose the disease number:\n";
+	int ctr = 0, ans;
+	for(auto dis:theDiseases){
+		cout << ++ctr << "-" << dis.second.title << endl;
+	}
+	cout << "--> ";
+	cin >> ans;
+	cin.ignore();
+	if(ans ==0 || ans>= ctr){
+		cout << RED << "\aInvalid choice.. please try again\n";
+		return;
+	}
+	auto it = theDiseases.begin();
+	advance(it, ctr);
+	if(it->second.symptoms.size() == 0){
+		cout << "This disease doesn't has any symptoms yet\n";
+		return;
+	}
+	cout << it->second.title << " symptoms are: ";
+	for(const string& symp: it->second.symptoms){
+		cout << symp << " ";
+	}
+	cout << endl;
 }
 
 void Patient::view_diagnosis_history()
 {
+	if(pat->diseases_history.size() == 0){
+		cout << RED << "Your don't have diagnosis history\n";
+	}
+	for(auto i: pat->diseases_history){
+		cout << "\n\t" << i.first << " " << i.second;
+	}
 }
 
 void Patient::clear_diagnosis_history()
