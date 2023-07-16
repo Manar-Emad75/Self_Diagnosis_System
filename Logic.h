@@ -43,7 +43,6 @@ public:
 public:
 	Doctor();
 	~Doctor();
-	void doc_register();
 	void add_disease();
 	void remove_disease();
 	void add_symptom();
@@ -63,7 +62,6 @@ public:
 public:
 	Patient();
 	~Patient();
-	void pat_register();
 	string calculate_time();
 	void diagnosis();
 	void display_disease_symptoms();
@@ -93,7 +91,7 @@ extern set<string>theSymptoms;
 extern user theUser;
 extern Doctor* doc ;
 extern Patient* pat ;
-extern int ID ;
+extern int disease_ID ;
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"      
 #define RED     "\033[31m"      

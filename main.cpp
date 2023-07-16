@@ -161,7 +161,7 @@ void Start()
 	int sz;
 	string line, temp;
 	readfile >> line; //<<<<<<<<<<<<<<<<<<ID>>>>>>>>>>>>>>>>>>
-	readfile >> ID; //ID
+	readfile >> disease_ID; //ID
 	readfile >> line; //<<<<<<<<<<<<<<<SYMPTOMS>>>>>>>>>>>>>>>
 	readfile >> line; //symp1;symp2;symp3;
 	theSymptoms = split(line, ';');
@@ -236,7 +236,7 @@ void End()
 
 
 	writefile << "<<<<<<<<<<<<<<<<<<ID>>>>>>>>>>>>>>>>>>\n";
-	writefile << ID << '\n';
+	writefile << disease_ID << '\n';
 
 	writefile << "<<<<<<<<<<<<<<<SYMPTOMS>>>>>>>>>>>>>>>\n";
 	for (string symp : theSymptoms)
